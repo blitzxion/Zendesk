@@ -118,4 +118,41 @@ class User extends ZendeskAppModel {
 	public function suspend($id) {
 		return $this->updateUser(array('suspended' => true));
 	}
+
+	/**
+	 * Delete a single user by id
+	 * @link http://developer.zendesk.com/documentation/rest_api/users.html#delete-user
+	 * @param int $id
+	 * @return array
+	 */
+	public function delete($id) {
+		if (!is_int($id)) {
+			throw new CakeException(__('User ID must be an integer. %s was given', gettype($id)));
+		}
+
+		$this->request = array(
+			'uri' => array(
+				'path' => $id . '.json'
+			),
+			'method' => 'DELETE'
+		);
+
+		return $this->delete($id);
+	}
+
+	/**
+	 * @link http://developer.zendesk.com/documentation/rest_api/users.html#set-a-user's-password
+	 */
+	public function setPassword($id, $password) {
+
+	}
+
+	/**
+	 * @link http://developer.zendesk.com/documentation/rest_api/users.html#change-a-user's-password
+	 */
+	public function changePassword($id, $password) {
+
+	}
+
+
 }
