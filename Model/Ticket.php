@@ -94,7 +94,7 @@ class Ticket extends ZendeskAppModel {
 		$this->request = array(
 			'uri' => array('path' => 'tickets.json'),
 			'method' => 'POST',
-			'body' => array('ticket' => array($data))
+			'body' => array('ticket' => $data)
 		);
 
 		return $this->save($data);
@@ -114,7 +114,7 @@ class Ticket extends ZendeskAppModel {
 		$this->request = array(
 			'uri' => array('path' => $id . '.json'),
 			'method' => 'PUT',
-			'body' => array('ticket' => array($data))
+			'body' => array('ticket' => $data)
 			);
 
 		return $this->update($data);
@@ -133,14 +133,14 @@ class Ticket extends ZendeskAppModel {
 				'path' => 'update_many.json?ids={' . implode(',', $ids) . '}'
 			),
 			'method' => 'PUT',
-			'body' => array('ticket' => array($data))
+			'body' => array('ticket' => $data)
 			);
 
 		return $this->update($data);
 	}
 
 	/**
-	 *
+	 * Mark a ticket as Spam and suspend the user
 	 * @link http://developer.zendesk.com/documentation/rest_api/tickets.html#mark-a-ticket-as-spam-and-suspend-the-requester
 	 * @param int $id
 	 * @return array
@@ -149,6 +149,13 @@ class Ticket extends ZendeskAppModel {
 		if (!is_int($id)) {
 			throw new CakeException(__('Ticket ID must be an integer. %s was given', gettype($id)));
 		}
+
+		$this->request = array(
+			'uri' => array('path' => $id . '/mark_as_spam.json'),
+			'method' => 'PUT'
+			);
+
+		return $this->update($data);
 	}
 
 	/**
