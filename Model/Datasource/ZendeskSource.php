@@ -105,6 +105,13 @@ class ZendeskSource extends DataSource {
 	public $config = array();
 
 	/**
+	 * Holds the request configuration
+	 *
+	 * @var array
+	 */
+	public $request = array();
+
+	/**
 	 * Configuration base
 	 *
 	 * @var array
@@ -128,13 +135,13 @@ class ZendeskSource extends DataSource {
 		$this->Http =& new HttpSocket(array('timeout' => $this->config['timeout']));
 		
 		$this->Http->configAuth('Basic', $this->config['apiUser'].'/token', $this->config['apiKey']);
-		$this->Http->request['uri']['host'] = $this->config['host'];
-		$this->Http->request['uri']['port'] = $this->config['port'];
+		$this->request['uri']['host'] = $this->config['host'];
+		$this->request['uri']['port'] = $this->config['port'];
 		
 		if ($this->config['port'] == 443) { // Only Https is currently allowed but check anyway.
-			$this->Http->request['uri']['scheme'] = 'https';
+			$this->request['uri']['scheme'] = 'https';
 		} else {
-			$this->Http->request['uri']['scheme'] = 'http';
+			$this->request['uri']['scheme'] = 'http';
 		}
 	}
 
@@ -252,6 +259,7 @@ class ZendeskSource extends DataSource {
 	 */
 	private function __configureRequest(\Model $model) {
 		$request = $model->request;
+		$this->Http->request = $this->request;
 
 		$this->Http->request['uri']['path'] = '/api/' . $this->ApiVersion . '/' . $model->useTable;
 
