@@ -107,7 +107,7 @@ class Ticket extends ZendeskAppModel {
 	 * @param array $data
 	 * @return array
 	 */
-	public function update($id, array $data) {
+	public function updateTicket($id, $data) {
 		if (!is_int($id)) {
 			throw new CakeException(__('Ticket ID must be an integer. %s was given', gettype($id)));
 		}
