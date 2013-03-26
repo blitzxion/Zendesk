@@ -125,7 +125,7 @@ class User extends ZendeskAppModel {
 	 * @param int $id
 	 * @return array
 	 */
-	public function delete($id) {
+	public function deleteUser($id) {
 		if (!is_int($id)) {
 			throw new CakeException(__('User ID must be an integer. %s was given', gettype($id)));
 		}
