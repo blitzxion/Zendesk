@@ -88,14 +88,14 @@ class ZendeskSource extends DataSource {
 	 *
 	 * @var integer Maximum number of request in the request log.
 	 */
-	protected $_requestLogMax = 2000;
+	protected $_requestLogMax = 200;
 
 	/**
 	 * Request log limit per entry in bytes
 	 *
 	 * @var integer Request log limit per entry in bytes
 	 */
-	protected $_requestLogLimitBytes = 2560;
+	protected $_requestLogLimitBytes = 256;
 
 	/**
 	 * Holds the configuration
