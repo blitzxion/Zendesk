@@ -12,7 +12,7 @@
  * @copyright     Copyright (c) Particle Ventures, LLC. (http://www.ufn.com)
  * @link          https://github.com/unitedfloristnetwork/Zendesk Cakephp Zendesk Plugin
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
- * 
+ *
  *
  * Datasource for Zendesk API
  * Set up to use this datasource in your project's database.php file.
@@ -52,7 +52,7 @@ class ZendeskSource extends DataSource {
 	 * @var string ApiVersion
 	 */
 	protected $ApiVersion = 'v2';
-	
+
 	/**
 	 * Time the last request took
 	 *
@@ -88,14 +88,14 @@ class ZendeskSource extends DataSource {
 	 *
 	 * @var integer Maximum number of request in the request log.
 	 */
-	protected $_requestLogMax = 200;
+	protected $_requestLogMax = 2000;
 
 	/**
 	 * Request log limit per entry in bytes
 	 *
 	 * @var integer Request log limit per entry in bytes
 	 */
-	protected $_requestLogLimitBytes = 256;
+	protected $_requestLogLimitBytes = 2560;
 
 	/**
 	 * Holds the configuration
@@ -133,11 +133,11 @@ class ZendeskSource extends DataSource {
 	public function __construct($config = array()) {
 		parent::__construct($config);
 		$this->Http =& new HttpSocket(array('timeout' => $this->config['timeout']));
-		
+
 		$this->Http->configAuth('Basic', $this->config['apiUser'].'/token', $this->config['apiKey']);
 		$this->request['uri']['host'] = $this->config['host'];
 		$this->request['uri']['port'] = $this->config['port'];
-		
+
 		if ($this->config['port'] == 443) { // Only Https is currently allowed but check anyway.
 			$this->request['uri']['scheme'] = 'https';
 		} else {
@@ -232,7 +232,13 @@ class ZendeskSource extends DataSource {
 
 		$timerStart = microtime(true); // Start measuring time for query
 
-		$response = $this->Http->request($request, null, array('header' => array('Content-Type' => 'application/json')));
+		$request = array_merge($request,array('header' => array('Content-Type' => 'application/json'))); // We're always sending JSON
+
+		// Added by RTS: If you provide any body/content, it must be json_encoded first
+		if(isset($request['body']))
+			$request['body'] = json_encode($request['body']);
+
+		$response = $this->Http->request($request); //, null, array('header' => array('Content-Type' => 'application/json')));
 
 		if ($log) { // Log the request and time it took
 			$this->took = round(microtime(true) - $timerStart, 3) * 1000;
@@ -240,6 +246,10 @@ class ZendeskSource extends DataSource {
 		}
 
 		$model->response = json_decode($response->body, true); // Decode the Json response
+
+		// Added by RTS: Set the "id" for easy use
+		if(isset($model->response[strtolower($model->alias)]['id']))
+			$model->id = $model->response[strtolower($model->alias)]['id'];
 
 		// Check response status code for success or failure
 		if (substr($this->Http->response['status']['code'], 0, 1) != 2) {
@@ -249,7 +259,7 @@ class ZendeskSource extends DataSource {
 			return false;
 		}
 
-		return $model->response;
+		return $model->response; // If you want the response, check $this-><zendesk model>->response
 	}
 
 	/**
@@ -269,7 +279,7 @@ class ZendeskSource extends DataSource {
 			 $this->Http->request['uri']['path'] .= '/' . $request['uri']['path'];
 		}
 		$this->Http->request['method'] = $request['method'];
-		
+
 		if (isset($request['body'])) {
 			$this->Http->request['body'] = $request['body'];
 		}

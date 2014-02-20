@@ -62,7 +62,7 @@ class User extends ZendeskAppModel {
 	 * @param array $data
 	 * @return array
 	 */
-	public function create(array $data) {
+	public function create($data = array(), $filterKey = false) {
 		$this->request = array(
 			'uri' => array('path' => 'users.json'),
 			'method' => 'POST',

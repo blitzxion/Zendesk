@@ -17,6 +17,12 @@
 App::uses('ZendeskAppModel', 'Zendesk.Model');
 class Ticket extends ZendeskAppModel {
 
+	// Added by RTS
+	public $_schema = array(
+		'subject' => array('type' => 'string'), // Required
+		'comment' => array('type' => 'text'), // Required
+	);
+
 	/**
 	 * Model name
 	 * @var $name
@@ -90,7 +96,7 @@ class Ticket extends ZendeskAppModel {
 	 * @param array $data
 	 * @return array
 	 */
-	public function create(array $data) {
+	public function create($data = array(), $filterKey = false) {
 		$this->request = array(
 			'uri' => array('path' => 'tickets.json'),
 			'method' => 'POST',
@@ -164,7 +170,7 @@ class Ticket extends ZendeskAppModel {
 	 * @param int $id
 	 * @return array
 	 */
-	public function delete($id) {
+	public function delete($id = NULL, $cascade = true) {
 		if (!is_int($id)) {
 			throw new CakeException(__('Ticket ID must be an integer. %s was given', gettype($id)));
 		}
